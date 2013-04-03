@@ -55,8 +55,15 @@ SWEP.IronSightsPos 		= Vector( 4.3, -2, 2.7 )
 function SWEP:PrimaryAttack()
 	if ( !self:CanPrimaryAttack() ) then return end
 		self:Bang()
-		timer.Simple(.03, function() self:Bang() end)
-		timer.Simple(.06, function() self:Bang() end)
+		
+		//Make sure the guy is alive before each shot
+		if self.Owner:Alive() then
+			timer.Simple(.03, function() self:Bang() end)
+		end
+		
+		if self.Owner:Alive() then
+			timer.Simple(.07, function() self:Bang() end)
+		end
 		self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
 

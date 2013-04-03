@@ -148,6 +148,7 @@ function SWEP:SetZoom(state)
 end
 
 function SWEP:DrawHUD()
+local scope = surface.GetTextureID("sprites/scope")
 	// No crosshair when ironsights is on
 	if ( self.Weapon:GetNetworkedBool( "Ironsights" ) ) then
 surface.SetDrawColor( 0, 0, 0, 255 )
@@ -182,7 +183,7 @@ surface.SetDrawColor( 0, 0, 0, 255 )
          surface.DrawLine(x, y, x + 1, y + 1)
 
          -- scope
-         surface.SetTexture(surface.GetTextureID("sprites/scope"))
+         surface.SetTexture(scope)
          surface.SetDrawColor(255, 255, 255, 255)
 
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)

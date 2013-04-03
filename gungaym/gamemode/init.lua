@@ -53,6 +53,7 @@ end
 
 function GM:PlayerInitialSpawn( ply )
 	PrintMessage( HUD_PRINTTALK, ply:GetName().. " has spawned." )
+	ply:PrintMessage(HUD_PRINTTALK, "Welcome to Gun Game by Shaps!") // Don't you dare take this out
 	ply:SetNWInt("level",1)
 	--ply:SetGamemodeTeam( 0 )
 	ply:SetModel(table.Random(models))

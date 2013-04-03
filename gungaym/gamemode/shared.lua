@@ -1,7 +1,7 @@
 GM.Name = "Gun Gaym"
-GM.Author = "idklol"
-GM.Email = "yousuck@life.com"
-GM.Website = "goatse.cx"
+GM.Author = "Ericson777/Shaps"
+GM.Email = "s.fuller468@gmail.com"
+GM.Website = "" //RIP Goatse.cx
 
 function GM:Initialize()
 	self.BaseClass.Initialize( self )

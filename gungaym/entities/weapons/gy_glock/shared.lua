@@ -34,7 +34,7 @@ SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_Glock.Single" )
 SWEP.Primary.Recoil			= 1.8
-SWEP.Primary.Damage			= 15
+SWEP.Primary.Damage			= 25
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.05
 SWEP.Primary.ClipSize		= 18
@@ -61,8 +61,16 @@ function SWEP:PrimaryAttack()
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Burst_Delay )
 		self.Weapon:SendWeaponAnim( ACT_VM_SECONDARYATTACK ) //Stolen from the CSShootBullet function
 		self:Bang()
-		timer.Simple(.03, function() self:Bang() end)
-		timer.Simple(.07, function() self:Bang() end)
+		
+		//Make sure the guy is alive before each shot
+		if self.Owner:Alive() then
+			timer.Simple(.03, function() self:Bang() end)
+		end
+		
+		if self.Owner:Alive() then
+			timer.Simple(.07, function() self:Bang() end)
+		end
+		
 	else
 		self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 		self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
