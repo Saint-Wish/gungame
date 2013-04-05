@@ -1,7 +1,5 @@
 
-print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")print("fuck")
 local hud_deathnotice_time = CreateConVar( "hud_deathnotices_time", "6", FCVAR_REPLICATED, "Amount of time to show death notice" )
-print("fuck")
 -- These are our kill icons
 local Color_Icon = Color( 255, 80, 0, 255 ) 
 local NPC_Color = Color( 250, 50, 50, 255 ) 
