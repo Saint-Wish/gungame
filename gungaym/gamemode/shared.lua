@@ -18,8 +18,6 @@ Alright, this is about to get really messy
 The following is pretty much going to be all the stuff that happens on kill
 */
 function OnKill( victim, weapon, killer )
-	print(weapon:GetClass())
-
 	local prevlev = killer:GetNWInt("level") --Define the killer's level for convienence
 	local wep = weplist[prevlev]
 	victim.NextSpawnTime = CurTime() + 4
@@ -30,7 +28,6 @@ function OnKill( victim, weapon, killer )
 	
 	
 	if victim == killer or not IsValid(killer) then --If you kill yourself/Fall to your death (I *think* no wep=fall basically)
-		SendDeathMessage(victim,killer:GetActiveWeapon().Class,killer)
 		demote(victim)
 	else --Else, if someone else killed you
 		if (prevlev) > count() and GetGlobalInt("RoundState") == 1 then --If the killer's level is higher than the gun total...
@@ -58,6 +55,8 @@ function OnKill( victim, weapon, killer )
 end
 hook.Add( "PlayerDeath", "playerDeathTest", OnKill )
 
+
+--Shamelessly ripped from the base gamemode code
 function DeathTicker( Victim, Inflictor, Attacker )
 	print(Inflictor:GetClass())
 	
@@ -119,11 +118,13 @@ function KillStreak(ply)
 	ply:EmitSound(((table.Random(killstreaksound))), 500, 100)
 	GAMEMODE:SetPlayerSpeed(ply, 550, 550)
 	ply:SetJumpPower( 300 )
+	ply:SetNWBool("boosted",true)
 	local trail = util.SpriteTrail(ply, 0, Color(255,0,0), false, 40, 30, 5.5, 1/(15+1)*0.5, "trails/plasma.vmt")
 	timer.Simple(5.5,function() 
 		GAMEMODE:SetPlayerSpeed(ply, 210, 350)
 		trail:Remove()
 		ply:SetJumpPower( 200 )
+		ply:SetNWBool("boosted", false)
 	end)
 end
 
@@ -146,20 +147,6 @@ function SendDeathMessage(victim,weapon,killer)
 	umsg.End()
 end
 
-function PrintDeathMessage(data) --Just for the server
-	victim = data:ReadString()
-	weapon = data:ReadString()
-	killer = data:ReadString()
-	ply = LocalPlayer()
-	
-	if victim ~= killer then --Not a suicide/fall
-		print(killer.." wasted "..victim.." with "..weapon)
-	else
-		print(victim.." couldn't take it anymore")
-	end
-end
-usermessage.Hook("DeathNotif",PrintDeathMessage)
-
 function demote(ply)
 	print(ply:GetName().." leveled down")
 	local prevlevs = ply:GetNWInt("level")
@@ -168,3 +155,40 @@ function demote(ply)
 	end
 end
 	
+	
+function GM:OnPlayerChat( player, strText, bTeamOnly, bPlayerIsDead )
+    text = string.lower(strText)
+    --
+    -- I've made this all look more complicated than it is. Here's the easy version
+    --
+    -- chat.AddText( player, Color( 255, 255, 255 ), ": ", strText )
+    --
+    
+    local tab = {}
+    
+    if ( bPlayerIsDead ) then
+        table.insert( tab, Color( 255, 30, 40 ) )
+        table.insert( tab, "*DEAD* " )
+    end
+    
+    if ( bTeamOnly ) then
+        table.insert( tab, Color( 30, 160, 40 ) )
+        table.insert( tab, "(TEAM) " )
+    end
+    
+    if ( IsValid( player ) ) then
+        table.insert( tab, player )
+    else
+        table.insert( tab, "Console" )
+    end
+    
+    table.insert( tab, Color( 255, 255, 255 ) )
+    table.insert( tab, ": "..strText )
+    
+    chat.AddText( unpack(tab) )
+
+
+    return true
+
+end
+

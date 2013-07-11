@@ -6,22 +6,17 @@ AddCSLuaFile( "cl_scoreboard.lua" )
 AddCSLuaFile( "mapchange.lua" )
 AddCSLuaFile( "cl_deathnotices.lua" )
 AddCSLuaFile( "cl_hudpickup.lua" )
---include( "cl_deathnotices" )
+AddCSLuaFile( "resources.lua" )
 include("shared.lua")
 include("entdel.lua")
 include("mapchange.lua" )
---include("cl_init.lua")
 include("player.lua")
 include("wepgen.lua")
 include("specialrounds.lua")
 include("rounds.lua")
-resource.AddFile("sound/gy/canttouch.wav")
-resource.AddFile("sound/gy/boomhead.wav")
-resource.AddFile("sound/gy/best.wav")
+
 
 RandomizeWeapons()
-
-hook.Add("PlayerKilledByPlayer", function() print("yo") end)
 
 function GM:Initialize( )
 	SetGlobalInt("round",0)
@@ -38,7 +33,7 @@ function GM:Initialize( )
 	"models/player/Phoenix.mdl",
 	"models/player/riot.mdl"
 	}
-	killstreaksound = { "gy/canttouch.wav", "gy/best.wav" }
+	killstreaksound = { "gy/canttouch.wav", "gy/best.wav", "gy/hood.wav" }
 	if not ConVarExists("gy_rounds") then
 		CreateConVar("gy_rounds",5,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Determines how many rounds there are per map")
 	end
@@ -80,6 +75,10 @@ function GM:PlayerDisconnected(ply)
 end
 
 function GM:PlayerSpawn( ply )
+	print "ss"
+	ply:SetRenderMode( RENDERMODE_TRANSALPHA )
+	ply:SetColor( Color(255, 255, 255, 100) )
+
 	local RS = GetGlobalInt("RoundState")
 	if RS ~= 2 then
 		ply:SetNWInt("lifelevel",0)
@@ -91,10 +90,11 @@ function GM:PlayerSpawn( ply )
 		else
 			GAMEMODE:SetPlayerSpeed(ply, 250, 480) --Knife
 		end
+		ply:SetNWBool("boosted", false)
 		ply:SetJumpPower( 200 )
 		
 		ply:GodEnable()
-		timer.Simple(1.5,function() ply:GodDisable() end) --Spawn protection, maybe disable on shoot?
+		timer.Simple(1.5,function() ply:GodDisable() ply:SetColor( Color(255, 255, 255, 255) ) end) --Spawn protection, maybe disable on shoot?
 	end
 end
 
@@ -111,7 +111,7 @@ function ScaleDamage( ply, hitgroup, dmginfo )
 			math.ceil(dmginfo:ScaleDamage( 1.3 ))
 			if math.ceil(dmginfo:GetDamage() * 1.3 ) > ply:Health() then
 				dmginfo:GetAttacker():EmitSound("gy/boomhead.wav", 290, 100)
-				 dmginfo:SetDamageForce(dmginfo:GetDamageForce()*100000)
+				 dmginfo:SetDamageForce(dmginfo:GetDamageForce()*100000) --woosh
 			end
 		end
 end

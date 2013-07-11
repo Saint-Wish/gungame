@@ -20,7 +20,7 @@ if ( CLIENT ) then
 	
 	surface.CreateFont( "CSKillIcons", {
 	font = "csd", 
-	size = ScreenScale( 30 ),
+	size = ScreenScale( 20 ),
 	weight = 500,
 	antialias = true, 
 	additive = true, })
@@ -60,10 +60,21 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
+SWEP.ZoomFOV				= 70
+SWEP.ZoomTime				= .25
+SWEP.RunPenalty				= 1.5
+SWEP.AimBoost				= .75
+
+
+
+function SWEP:SetupDataTables()
+
+	self:DTVar( "Bool", 0, "Ironsight" )
+
+end
+
 function SWEP:OnRestore()
-	
-		wepnames = {}
-	
+	wepnames = {}
 	table.insert(wepnames,(self.PrintName),(self:GetClass()))
 end
 
@@ -80,7 +91,7 @@ function SWEP:Initialize()
 	end
 	
 	self:SetWeaponHoldType( self.HoldType )
-	self.Weapon:SetNetworkedBool( "Ironsights", false )
+	self.dt.Ironsight = false
 	
 end
 
@@ -90,14 +101,66 @@ end
 ---------------------------------------------------------*/
 function SWEP:Reload()
 	self.Weapon:DefaultReload( ACT_VM_RELOAD );
-	self:SetIronsights( false )
+	--self:SetIronsights( false )
+	--self.Owner:SetFOV(0, self.ZoomTime or .5)
 end
 
 
 /*---------------------------------------------------------
-   Think does nothing
+IronSight (stolen from m9k)
+---------------------------------------------------------*/
+function SWEP:IronSight()
+	local speed1 = 0
+	local speed2 = 0
+
+	if self.Owner:GetNWBool("boosted") then
+		speed1 = 550
+		speed2 = 550
+	else
+		speed1 = 210
+		speed2 = 350
+	end
+	
+	
+	if self.Owner:KeyPressed(IN_ATTACK2) and not (self.Weapon:GetNWBool("Reloading")) and (!self.Owner:KeyDown(IN_RELOAD) or (self.Weapon:Clip1() ~= self.Primary.ClipSize)) then
+		self:SetIronsights(true)
+		self.Owner:SetFOV(self.ZoomFOV or 80, self.ZoomTime or .03)
+		GAMEMODE:SetPlayerSpeed(self.Owner, speed1, speed1)
+	elseif ((self.Owner:KeyDown(IN_RELOAD) and (self.Weapon:Clip1() ~= self.Primary.ClipSize)) or (self.Weapon:Clip1() <= 0)) and (self.Owner:GetAmmoCount( self.Primary.Ammo ) > 0) then
+		self:SetIronsights( false )
+		self.Owner:SetFOV(0, self.ZoomTime or .03)
+	elseif self.Owner:KeyDown(IN_SPEED) and not self.Owner:KeyDown(IN_ATTACK2) then
+		GAMEMODE:SetPlayerSpeed(self.Owner, speed1, speed2)
+	elseif self.Owner:KeyPressed(IN_ATTACK2) and !self.Owner:KeyDown(IN_SPEED) then 
+		self:SetIronsights(true)
+		self.Owner:SetFOV(self.ZoomFOV or 80, self.ZoomTime or .03)
+	end
+
+	
+	if self.Owner:KeyReleased(IN_ATTACK2) then
+		self.Crosshair = true
+		self:SetIronsights(false)
+		self.Owner:SetFOV(0, self.ZoomTime or .03)
+		GAMEMODE:SetPlayerSpeed(self.Owner, speed1, speed2)
+		if CLIENT then return end
+	end
+		if self.Owner:KeyDown(IN_ATTACK2) then
+			self.SwayScale 	= 0.1
+			self.BobScale 	= 0.1
+		else
+			self.SwayScale 	= 1.0
+			self.BobScale 	= 1.0
+		end
+end
+/*---------------------------------------------------------
+IronSight
+---------------------------------------------------------*/
+
+/*---------------------------------------------------------
+   Think does nothing (jklol)
 ---------------------------------------------------------*/
 function SWEP:Think()	
+	self:IronSight()
 end
 
 
@@ -105,6 +168,8 @@ end
 	PrimaryAttack
 ---------------------------------------------------------*/
 function SWEP:PrimaryAttack()
+	local recoil = self.Primary.Recoil
+	local cone = self.Primary.Cone
 
 	self.Weapon:SetNextSecondaryFire( CurTime() + self.Primary.Delay )
 	self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -115,8 +180,18 @@ function SWEP:PrimaryAttack()
 	// Play shoot sound
 	self.Weapon:EmitSound( self.Primary.Sound )
 	
+	
+	if self.dt.Ironsight then
+		recoil =  recoil * (self.AimBoost or .75)
+		cone = cone * (self.AimBoost or .75)
+	end
+	
+	if self.Owner:KeyDown(IN_SPEED) then
+		recoil =  recoil * (self.RunPenalty or 1.5)
+		cone = cone * (self.RunPenalty or 1.5)
+	end
 	// Shoot the bullet
-	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
+	self:CSShootBullet( self.Primary.Damage, recoil, self.Primary.NumShots, cone )
 	
 	// Remove 1 bullet from our clip
 	self:TakePrimaryAmmo( 1 )
@@ -142,7 +217,7 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 
 	numbul 	= numbul 	or 1
 	cone 	= cone 		or 0.01
-	iron = ( self.Weapon:GetNetworkedBool( "Ironsights" ) )
+	iron = ( self.dt.Ironsight )
 	if iron then
 		cone = cone * 0.9
 	end
@@ -189,7 +264,7 @@ function SWEP:DrawWeaponSelection( x, y, wide, tall, alpha )
 	
 end
 
-local IRONSIGHT_TIME = 0.25
+local IRONSIGHT_TIME = SWEP.ZoomTime
 
 /*---------------------------------------------------------
    Name: GetViewModelPosition
@@ -199,7 +274,7 @@ function SWEP:GetViewModelPosition( pos, ang )
 
 	if ( !self.IronSightsPos ) then return pos, ang end
 
-	local bIron = self.Weapon:GetNetworkedBool( "Ironsights" )
+	local bIron = self.dt.Ironsight
 	
 	if ( bIron != self.bLastIron ) then
 	
@@ -264,39 +339,20 @@ end
 ---------------------------------------------------------*/
 function SWEP:SetIronsights( b )
 
-	self.Weapon:SetNetworkedBool( "Ironsights", b )
+	self.dt.Ironsight = b
 
 end
 
 
 SWEP.NextSecondaryAttack = 0
-/*---------------------------------------------------------
-	SecondaryAttack
----------------------------------------------------------*/
-function SWEP:SecondaryAttack()
 
-	if ( !self.IronSightsPos ) then return end
-	if ( self.NextSecondaryAttack > CurTime() ) then return end
-	
-	bIronsights = !self.Weapon:GetNetworkedBool( "Ironsights", false )
-	
-	self:SetIronsights( bIronsights )
-	
-	self.NextSecondaryAttack = CurTime() + 0.3
-	
+function SWEP:SecondaryAttack()
 end
 
-/*---------------------------------------------------------
-	DrawHUD
-	
-	Just a rough mock up showing how to draw your own crosshair.
-	
----------------------------------------------------------*/
-
 function SWEP:DrawHUD()
-	local iron = self.Weapon:GetNetworkedBool( "Ironsights" )
+	local iron = self.Weapon.dt.Ironsight
 	// No crosshair when ironsights is on
-	--if ( self.Weapon:GetNetworkedBool( "Ironsights" ) ) then return end
+	if ( self.dt.Ironsight ) then return end
 
 	local x, y
 
@@ -314,21 +370,21 @@ function SWEP:DrawHUD()
 	else
 		x, y = ScrW() / 2.0, ScrH() / 2.0
 	end
-	
-	if iron then
-		scale = 10 * self.Primary.Cone * 0.9
-	else
-		scale = 10 * self.Primary.Cone
-	end
+
+	scale = 15 * self.Primary.Cone
 
 	// Scale the size of the crosshair according to how long ago we fired our weapon
 	local LastShootTime = self.Weapon:GetNetworkedFloat( "LastShootTime", 0 )
 	scale = scale * (2 - math.Clamp( (CurTime() - LastShootTime) * 5, 0.0, 1.0 ))
 	
+	if self.Owner:KeyDown(IN_SPEED) then
+		scale = scale * (self.RunPenalty or 1.5)
+	end
+	
 	surface.SetDrawColor( 0, 255, 0, 255 )
 	
 	// Draw an awesome crosshair
-	local gap = 40 * scale
+	local gap =  30 * scale
 	local length = gap + 20 * scale
 	surface.DrawLine( x - length, y, x - gap, y )
 	surface.DrawLine( x + length, y, x + gap, y )

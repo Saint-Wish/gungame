@@ -1,4 +1,5 @@
 a = 0
+local b = 0
 mapvote = {}
 function changemap()
 	if SERVER then
@@ -30,6 +31,8 @@ end
 
 function cl_SendChoice()
 	if CLIENT then
+		b = b + 1
+		if b > 1 then return end
 		print "hi"
 		local maps = net.ReadTable()
 		choice = nil
@@ -70,7 +73,7 @@ net.Receive("maplist",cl_SendChoice)
 function sv_gotit()
 	choice = net.ReadString()
 	ply = net.ReadEntity()
-	if ply:GetNWBool("voted") then end
+	if ply:GetNWBool("voted") then return end
 	ply:SetNWBool("voted",true)
 	print(choice)
 	old = mapvote[choice]

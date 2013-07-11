@@ -49,9 +49,10 @@ SWEP.Secondary.DefaultClip	= -1
 SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
-SWEP.ZoomAmount         = 40
-SWEP.ZoomTime           = 0.5
+SWEP.ZoomFOV	       = 50
+SWEP.ZoomTime          = 0.5
 SWEP.IronSightsPos      = Vector( -5,-5,-5 )
+
 SWEP.IronSightsAng      = Vector( 2.6, 1.37, 3.5 )
 
 function SWEP:PrimaryAttack()
@@ -121,43 +122,16 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	end
 
 end
-function SWEP:SecondaryAttack()
-
-	if ( !self.IronSightsPos ) then return end
-	if ( self.NextSecondaryAttack > CurTime() ) then return end
-	
-	bIronsights = !self.Weapon:GetNetworkedBool( "Ironsights", false )
-	
-	self:SetIronsights( bIronsights )
-	
-	self.NextSecondaryAttack = CurTime() + 0.3
-	
-	if SERVER then
-        self:SetZoom(bIronsights)
-    end
-end
-
-function SWEP:SetZoom(state)
-    if CLIENT then 
-       return
-    else
-       if state then
-          self.Owner:SetFOV(35, 0.3)
-       else
-          self.Owner:SetFOV(0, 0.2)
-       end
-    end
-end
 
 function SWEP:DrawHUD()
-local scope = surface.GetTextureID("sprites/scope")
+local scope = surface.GetTextureID("sprites/scope_new")
 	// No crosshair when ironsights is on
-	if ( self.Weapon:GetNetworkedBool( "Ironsights" ) ) then
-surface.SetDrawColor( 0, 0, 0, 255 )
+	if ( self.dt.Ironsight ) then
+		surface.SetDrawColor( 0, 0, 0, 255 )
          
          local x = ScrW() / 2.0
          local y = ScrH() / 2.0
-         local scope_size = ScrH()*1.1
+         local scope_size = ScrH()
 
          -- crosshair
          local gap = 80
@@ -191,7 +165,7 @@ surface.SetDrawColor( 0, 0, 0, 255 )
          surface.DrawTexturedRectRotated(x, y, scope_size, scope_size, 0)
 
     function self:AdjustMouseSensitivity()
-      return (self.Weapon:GetNetworkedBool( "Ironsights" ) and 0.2) or nil
+      return (self.dt.Ironsight and 0.6) or nil
 	end
 end
 end

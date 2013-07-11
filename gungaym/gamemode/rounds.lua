@@ -42,6 +42,7 @@ function RoundStart(prevwin)
 end
 
 function RoundEnd(winner)
+	SetGlobalInt("MaxRounds", GetConVarNumber("gy_rounds"))
 	ResetSpecial()
 	local maxround = GetGlobalInt("MaxRounds")
 	local round = GetGlobalInt("round")
@@ -60,7 +61,6 @@ function RoundEnd(winner)
 	if wins >= 3 then
 		PrintMessage(HUD_PRINTCENTER, (winner:GetName().." won the game!"))
 		for k,v in pairs(player.GetAll()) do
-			v:SetNWInt("wins", 0)
 			changemap()
 		end
 	end

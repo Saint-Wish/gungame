@@ -10,109 +10,56 @@ suicide = { "You couldn't take the heat", "You offed yourself", "You commited su
 
 
 --Right off the bat, I'm terrible with HUD's, so enjoy lots of text instead of a nice pretty bunch of health/ammo bars
+--jk to the above, thanks Cowabanga for your mock HUD <3
 function InitializeFonts()
 
-surface.CreateFont( "healthfont", {
-	font 		= "Impact",
-	size 		= 70,
-	weight 		= 500,
-	blursize 	= .0,
-	scanlines 	= 0,
-	antialias 	= true,
-	underline 	= false,
-	italic 		= true,
-	strikeout 	= false,
-	symbol 		= false,
-	rotary 		= false,
-	shadow 		= false,
-	additive 	= false,
-	outline 	= true
-	} )
-	
-		surface.CreateFont( "ammofont", {
-	font 		= "Impact",
-	size 		= 75,
-	weight 		= 500,
-	blursize 	= 0,
-	scanlines 	= 0,
-	antialias 	= true,
-	underline 	= false,
-	italic 		= true,
-	strikeout 	= false,
-	symbol 		= false,
-	rotary 		= false,
-	shadow 		= false,
-	additive 	= false,
-	outline 	= true
-	} )
-	
-		surface.CreateFont( "ammofontsmall", {
-	font 		= "Impact",
-	size 		= 35,
-	weight 		= 500,
-	blursize 	= 0,
-	scanlines 	= 0,
-	antialias 	= true,
-	underline 	= false,
-	italic 		= true,
-	strikeout 	= false,
-	symbol 		= false,
-	rotary 		= false,
-	shadow 		= false,
-	additive 	= false,
-	outline 	= true
-	} )
-	
-			surface.CreateFont( "prevwep", {
-	font 		= "Impact",
-	size 		= 30,
-	weight 		= 500,
-	blursize 	= 0,
-	scanlines 	= 0,
-	antialias 	= true,
-	underline 	= false,
-	italic 		= true,
-	strikeout 	= true,
-	symbol 		= false,
-	rotary 		= false,
-	shadow 		= false,
-	additive 	= false,
-	outline 	= true
-	} )
-	
-			surface.CreateFont( "nextwep", {
-	font 		= "Impact",
-	size 		= 45,
-	weight 		= 500,
-	blursize 	= 0,
-	scanlines 	= 0,
-	antialias 	= true,
-	underline 	= false,
-	italic 		= true,
-	strikeout 	= false,
-	symbol 		= false,
-	rotary 		= false,
-	shadow 		= false,
-	additive 	= false,
-	outline 	= true
-	} )
-	
-				surface.CreateFont( "curwep", {
-	font 		= "Impact",
-	size 		= 70,
-	weight 		= 500,
-	blursize 	= 0,
-	scanlines 	= 0,
-	antialias 	= true,
-	underline 	= false,
-	italic 		= true,
-	strikeout 	= false,
-	symbol 		= false,
-	rotary 		= false,
-	shadow 		= false,
-	additive 	= false,
-	outline 	= true
-	} )
+
+surface.CreateFont( "healthindicator",
+{
+font      = "Tahoma",
+size      = 30,
+weight    = 500
+}
+)
+
+surface.CreateFont( "lvlindicator",
+{
+font      = "Tahoma",
+size      = 28,
+weight    = 500
+}
+)
+
+surface.CreateFont( "reservedammo",
+{
+font      = "Tahoma",
+size      = 60,
+weight    = 500
+}
+)
+
+surface.CreateFont( "remainingammo",
+{
+font      = "Tahoma",
+size      = 98,
+weight    = 500
+}
+)
+
+surface.CreateFont( "currentweapon",
+{
+font      = "Tahoma",
+size      = 52,
+weight    = 500
+}
+)
+
+surface.CreateFont( "nextweapon",
+{
+font      = "Tahoma",
+size      = 36,
+weight    = 500
+})
 end
 
 
@@ -168,15 +115,14 @@ function DrawHUD()
 	if ply:Alive() then
 	
 		if GetConVarNumber("gy_nextwep_enabled") == 1 then
-		
 			if lasttime == nil or lasttime < CurTime() - (GetConVarNumber("gy_nextwep_delay")) then
 				lasttime = CurTime()
 				cl_PrevNextWeps(level)
 			end
 			if nextname ~= nil and level == count() then
-				draw.SimpleText(("Knife") ,"nextwep", ScrW()-350, ScrH() - 150, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+				draw.SimpleTextOutlined("Crowbar","nextweapon", ScrW()/1.215, ScrH() /1.046, Color(161,161,161), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(74,74,74))
 			elseif nextname ~= nil and level < count() then
-				draw.SimpleText(("--> "..nextname) ,"nextwep", ScrW()-350, ScrH() - 150, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+				draw.SimpleTextOutlined((nextname),"nextweapon", ScrW()/1.215, ScrH() /1.046, Color(161,161,161), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1, Color(74,74,74))
 			end
 		end
 		
@@ -185,12 +131,12 @@ function DrawHUD()
 			local mag_extra = ply:GetAmmoCount(ply:GetActiveWeapon():GetPrimaryAmmoType()) //How much ammunition you have outside the current magazine
 			
 			name = ply:GetActiveWeapon().PrintName
-			draw.SimpleText((name) ,"curwep", ScrW()-255, ScrH() - 200, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
+			draw.SimpleTextOutlined((name) ,"currentweapon", ScrW()/1.215, ScrH()/1.08, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP,1.5, Color(74,74,74))
 			
 
 			
 			if level < count() + 1 then
-				draw.SimpleText(("Level: "..level.."/"..count()) ,"prevwep", ScrW()/14, ScrH() - 30, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+				draw.SimpleTextOutlined(("Level: "..level.."/"..count()) ,"lvlindicator", ScrW()/9.9, ScrH() /1.1, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(74,74,74))
 			end
 			
 			--if prevname ~= nil and level ~= 1 then
@@ -198,12 +144,14 @@ function DrawHUD()
 			--end
 			
 			if mag_left ~= -1 then
-				draw.SimpleText((mag_left) ,"ammofont", ScrW()-255, ScrH() - 41, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
-				draw.SimpleText(("/"..mag_extra) ,"ammofontsmall", ScrW()-255, ScrH() - 50, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+				draw.SimpleTextOutlined((mag_left) ,"remainingammo", ScrW()/1.145, ScrH() - 41, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP, 1.5, Color(74,74,74))
+				draw.SimpleTextOutlined(("/"..mag_extra) ,"reservedammo", ScrW()/1.145, ScrH() - 50, Color(161,161,161), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(74,74,74))
 			end
 			--draw.RoundedBox(10, ScrW()/15, ScrH() - 100, 250, 50, Color(100,25,25,200))
-			--draw.RoundedBox(10, ScrW()/15, ScrH() - 100, LocalPlayer():Health()*2.5, 50, Color(25,150,25,200))
-			draw.SimpleText(("Health: "..health) ,"healthfont", ScrW()/14, ScrH() - 50, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
+			draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, 300, 30, Color(106,17,17))
+			draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, LocalPlayer():Health()*3, 30, Color(33,107,33))
+			draw.SimpleTextOutlined((health) ,"healthindicator", ScrW()/3.92, ScrH() / 1.069, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP,1,Color(74,74,74))
+			
 		end
 	end
 	
@@ -213,19 +161,7 @@ function DrawHUD()
 		maxrounds = GetGlobalInt("MaxRounds")
 	end
 		
-	draw.SimpleText(("Round "..round.."/"..maxrounds) ,"nextwep", ScrW()-55, ScrH() - 0, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP)
-	
-	if keel then
-		draw.SimpleText(("You "..res.." "..vic) ,"nextwep", ScrW()/2, ScrH()/1.1, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-	end
-	
-	if ded then
-		draw.SimpleText(("You were "..res.." by "..kil) ,"nextwep", ScrW()/2, ScrH()/1.1, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-	end
-	
-	if sui then
-		draw.SimpleText(resu,"nextwep", ScrW()/2, ScrH()/1.1, Color(255,255,255), TEXT_ALIGN_CENTER, TEXT_ALIGN_TOP)
-	end
+	draw.SimpleTextOutlined(("Round "..round.."/"..maxrounds) ,"reservedammo", ScrW()/10, ScrH()/1.015, Color(255,255,255), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP,1,Color(74,74,74))
 end
 
 hook.Add("HUDPaint","DrawHUD",DrawHUD)
@@ -236,39 +172,3 @@ function hidehud(name)
 	end
 end
 hook.Add("HUDShouldDraw", "HideOldHud", hidehud)
-
-function PrintDeath(data)
-	timer.Destroy("DeathTimer")
-	ded = false
-	keel = false
-	sui = false
-	resu = false
-	res = "" --The 'witty' death response, "mutilated" and "cut up"
-	vic = data:ReadString()
-	wep = data:ReadString()
-	kil = data:ReadString()
-	
-	if wep == "gy_knife" then
-		res = table.Random(killknife)
-	else
-		res = table.Random(killgun)
-	end
-	
-	ply = LocalPlayer():GetName()
-	
-	if vic == kil then
-		sui = true
-		resu = table.Random(suicide)
-	elseif ply == vic then
-		ded = true
-	elseif ply == kil then
-		keel = true
-	end
-	
-	timer.Create("DeathTimer",3,1,function()
-		ded = false
-		keel = false
-		sui = false
-	end)
-end	
-usermessage.Hook("DeathNotif",PrintDeath)

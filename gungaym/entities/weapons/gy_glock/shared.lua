@@ -40,7 +40,7 @@ SWEP.Primary.Cone			= 0.05
 SWEP.Primary.ClipSize		= 18
 SWEP.Primary.Delay			= 0.05
 SWEP.Primary.DefaultClip	= 60
-SWEP.Primary.Automatic		= false
+SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
 
 SWEP.Burst_Delay			= .25
@@ -54,7 +54,7 @@ SWEP.IronSightsPos 		= Vector( 4.3, -2, 2.7 )
 
 function SWEP:PrimaryAttack()
 	if ( !self:CanPrimaryAttack() ) then return end
-	local bIron = self.Weapon:GetNetworkedBool( "Ironsights" )
+	local bIron = self.dt.Ironsights
 
 	if bIron then
 		self.Weapon:SetNextSecondaryFire( CurTime() + self.Burst_Delay )
@@ -92,7 +92,7 @@ function SWEP:Bang()
 	self.Weapon:EmitSound( self.Primary.Sound )
 	
 	// Shoot the bullet
-	local bIron = self.Weapon:GetNetworkedBool( "Ironsights" )
+	local bIron = self.dt.Ironsight
 	
 	if bIron then
 	self:CSShootBullet( self.Primary.Damage*2, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone*.5 )

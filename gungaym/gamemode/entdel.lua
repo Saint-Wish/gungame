@@ -1,10 +1,11 @@
+--Deletes all the unneeded HL2DM shit
 hl2dments = {
 	"item_ammo_pistol",
    "item_box_buckshot",
    "item_ammo_smg1",
    "item_ammo_357",
    "item_ammo_357_large",
-   "item_ammo_revolver", -- zm
+   "item_ammo_revolver",
    "item_ammo_ar2",
    "item_ammo_ar2_large",
    "item_ammo_smg1_grenade",

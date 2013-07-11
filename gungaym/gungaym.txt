@@ -1,12 +1,12 @@
-"terrortown"
+"payday"
 {
 	"base"		"base"
-	"title"		"Gun Game"
+	"title"		"Gun Gaym"
 	"maps"		"^gg_"
 	"menusystem"	"1"
 
 	"settings"
 	{
-		// TODO: put some settings here
+
 	}
 }

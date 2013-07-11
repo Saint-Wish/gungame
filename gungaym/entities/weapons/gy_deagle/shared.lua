@@ -42,6 +42,9 @@ SWEP.Primary.Delay			= 0.3
 SWEP.Primary.DefaultClip	= 60
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "smg1"
+SWEP.ZoomFOV				= 80
+SWEP.ZoomTime				= .1
+
 
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1
