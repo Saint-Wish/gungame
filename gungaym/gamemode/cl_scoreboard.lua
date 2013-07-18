@@ -53,11 +53,11 @@ local PLAYER_LINE =
 		self.Level:SetFont( "ScoreboardDefault" )
 		self.Level:SetContentAlignment( 5 )
 	
-		self.Wins		= self:Add( "DLabel" )
-		self.Wins:Dock( RIGHT )
-		self.Wins:SetWidth( 50 )
-		self.Wins:SetFont( "ScoreboardDefault" )
-		self.Wins:SetContentAlignment( 5 )
+		self.Frags		= self:Add( "DLabel" )
+		self.Frags:Dock( RIGHT )
+		self.Frags:SetWidth( 50 )
+		self.Frags:SetFont( "ScoreboardDefault" )
+		self.Frags:SetContentAlignment( 5 )
 
 		self:Dock( TOP )
 		self:DockPadding( 3, 3, 3, 3 )
@@ -87,16 +87,17 @@ local PLAYER_LINE =
 			return
 		end
 
-		if ( self.NumWins == nil || self.NumWins != self.Player:GetNWInt("wins") ) then
-			self.NumWins	=	self.Player:GetNWInt("wins")
-			self.Wins:SetText( self.NumWins )
-		end
 
 		if ( self.NumLevel == nil || self.NumLevel != self.Player:Frags() ) then
 			self.NumLevel	=	self.Player:GetNWInt("level")
 			self.Level:SetText( self.NumLevel )
 		end
 
+		if ( self.NumFrags == nil || self.NumFrags != self.Player:GetNWInt("Frags") ) then
+			self.NumFrags	=	self.Player:GetNWInt("Frags")
+			self.Frags:SetText( self.NumFrags )
+		end
+		
 		if ( self.NumPing == nil || self.NumPing != self.Player:Ping() ) then
 			self.NumPing	=	self.Player:Ping()
 			self.Ping:SetText( self.NumPing )
@@ -131,7 +132,7 @@ local PLAYER_LINE =
 		-- so if we set the z order according to Level they'll be ordered that way!
 		-- Careful though, it's a signed short internally, so needs to range between -32,768k and +32,767
 		--
-		self:SetZPos( (self.NumWins * -100) - self.NumLevel*50 + string.byte(self.Player:GetName(),1))
+		self:SetZPos( (self.NumLevel * -120) + (self.NumFrags * -100) - string.byte(self.Player:GetName(),1))
 
 	end,
 

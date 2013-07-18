@@ -72,10 +72,13 @@ end
 
 function SWEP:Deploy()
 	self.Owner:EmitSound( "weapons/knife/knife_deploy1.wav" );
+	if self.Owner:GetNWBool("boosted") then
+		GAMEMODE:SetPlayerSpeed(self.Owner, 550, 550)
+	else
+		GAMEMODE:SetPlayerSpeed(self.Owner, 210,350)
+	end
 	return true;
 end
-
-
 
 function SWEP:PrimaryAttack()
    self.Weapon:SetNextPrimaryFire( CurTime() + self.Primary.Delay )
@@ -87,7 +90,7 @@ function SWEP:PrimaryAttack()
    end
 
    local spos = self.Owner:GetShootPos()
-   local sdest = spos + (self.Owner:GetAimVector() * 130)
+   local sdest = spos + (self.Owner:GetAimVector() * 100)
 
    local tr_main = util.TraceLine({start=spos, endpos=sdest, filter=self.Owner, mask=MASK_SHOT_HULL})
    local hitEnt = tr_main.Entity

@@ -4,62 +4,66 @@ keel = false
 ded = false
 sui = false
 
-killgun = {"mutilated", "killed", "broke", "ventilated", "murdered", "destroyed" }
-killknife = { "shanked", "stabbed", "cut", "cut up", "sliced" }
-suicide = { "You couldn't take the heat", "You offed yourself", "You commited suicide", "You killed yourself", "Mistakes were made" }
+local asp = 0
+if (ScrW() / ScrH()) == 16/10 then
+	asp = 1.072
+elseif (ScrW() / ScrH()) == 16/9 then
+	asp = 1.069	
+elseif (ScrW() / ScrH()) == 4/3 then
+	asp = 1.0785
+end
+
 
 
 --Right off the bat, I'm terrible with HUD's, so enjoy lots of text instead of a nice pretty bunch of health/ammo bars
 --jk to the above, thanks Cowabanga for your mock HUD <3
 function InitializeFonts()
+	surface.CreateFont( "healthindicator",
+	{
+	font      = "Tahoma",
+	size      = ScreenScale(10),
+	weight    = 500
+	}
+	)
 
+	surface.CreateFont( "lvlindicator",
+	{
+	font      = "Tahoma",
+	size      = ScreenScale(9.24),
+	weight    = 500
+	}
+	)
 
-surface.CreateFont( "healthindicator",
-{
-font      = "Tahoma",
-size      = 30,
-weight    = 500
-}
-)
+	surface.CreateFont( "reservedammo",
+	{
+	font      = "Tahoma",
+	size      = ScreenScale(20),
+	weight    = 500
+	}
+	)
 
-surface.CreateFont( "lvlindicator",
-{
-font      = "Tahoma",
-size      = 28,
-weight    = 500
-}
-)
+	surface.CreateFont( "remainingammo",
+	{
+	font      = "Tahoma",
+	size      = ScreenScale(32.34),
+	weight    = 500
+	}
+	)
 
-surface.CreateFont( "reservedammo",
-{
-font      = "Tahoma",
-size      = 60,
-weight    = 500
-}
-)
+	surface.CreateFont( "currentweapon",
+	{
+	font      = "Tahoma",
+	size      = ScreenScale(17.16),
+	weight    = 500
+	}
+	)
 
-surface.CreateFont( "remainingammo",
-{
-font      = "Tahoma",
-size      = 98,
-weight    = 500
-}
-)
-
-surface.CreateFont( "currentweapon",
-{
-font      = "Tahoma",
-size      = 52,
-weight    = 500
-}
-)
-
-surface.CreateFont( "nextweapon",
-{
-font      = "Tahoma",
-size      = 36,
-weight    = 500
-})
+	surface.CreateFont( "nextweapon",
+	{
+	font      = "Tahoma",
+	size      = ScreenScale(12),
+	weight    = 500
+	})
 end
 
 
@@ -148,9 +152,12 @@ function DrawHUD()
 				draw.SimpleTextOutlined(("/"..mag_extra) ,"reservedammo", ScrW()/1.145, ScrH() - 50, Color(161,161,161), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP, 1, Color(74,74,74))
 			end
 			--draw.RoundedBox(10, ScrW()/15, ScrH() - 100, 250, 50, Color(100,25,25,200))
-			draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, 300, 30, Color(106,17,17))
-			draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, LocalPlayer():Health()*3, 30, Color(33,107,33))
-			draw.SimpleTextOutlined((health) ,"healthindicator", ScrW()/3.92, ScrH() / 1.069, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP,1,Color(74,74,74))
+			draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, ScreenScale(100), ScreenScale(10), Color(106,17,17))
+			draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, ScreenScale(math.Min(LocalPlayer():Health(),100)), ScreenScale(10), Color(33,107,33))
+			if health > 100 then
+				draw.RoundedBox(2, ScrW()/9.9, ScrH() / 1.1, ScreenScale(math.Min(LocalPlayer():Health()-100),100), ScreenScale(10), Color(33,33,107))
+			end
+			draw.SimpleTextOutlined((health) ,"healthindicator", ScrW()/3.92, ScrH() / asp, Color(255,255,255), TEXT_ALIGN_RIGHT, TEXT_ALIGN_TOP,1,Color(74,74,74))
 			
 		end
 	end

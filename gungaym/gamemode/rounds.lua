@@ -4,23 +4,13 @@
 2 = Post round (The winner is slaughtering everyone)
 3 = End of the game?
 */
-function RoundStart(prevwin)
+function RoundStart()
+	--ImportEntities(game.GetMap())
 	SetGlobalInt("RoundState", 0)
-	game.CleanUpMap()
 	ClearEnts()
 	round = GetGlobalInt("round")
 	SetGlobalInt("round", round+1)
 	RandomizeWeapons()
-	ResetSpecial()
-	
-	/*local SR_go = math.random(1,1)
-	if SR_go == 1 then
-		SpecialRandom()
-		print("Special Round!")
-		--for k,v in pairs(SpecialRound) do
-			--print(k,v)
-		--end
-	end*/
 	
 	for k,v in pairs(player.GetAll()) do
 		net.Start("wepcl")
@@ -43,7 +33,6 @@ end
 
 function RoundEnd(winner)
 	SetGlobalInt("MaxRounds", GetConVarNumber("gy_rounds"))
-	ResetSpecial()
 	local maxround = GetGlobalInt("MaxRounds")
 	local round = GetGlobalInt("round")
 	for k,v in pairs(player.GetAll()) do

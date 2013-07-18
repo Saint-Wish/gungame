@@ -4,7 +4,6 @@ weplist = mastlist --Probably don't need to do this, but nothing wrong with safe
 
 --I found this function online, was much smaller than the 3 function colossus I had :p
 function RandomizeWeapons()
-
 	l=count()
 	for i = l, 2, -1 do -- backwards
 		local r = math.random(i) -- select a random number between 1 and i
@@ -15,7 +14,7 @@ end
 
 --Counts how many weapons there are in the list at the top
 function count()
-	c=0
+	local c=0
 	for _ in pairs(mastlist) do
 		c=c+1
 	end

@@ -14,7 +14,9 @@ function GM:HUDWeaponPickedUp( wep )
 
 	if (!LocalPlayer():Alive()) then return end
 	if not IsValid(wep) then return end
+	if wep:GetPrintName() == nil then return end
 	if wep:GetPrintName() == "trans" then return end
+
 		
 	local pickup = {}
 	pickup.time 		= CurTime()

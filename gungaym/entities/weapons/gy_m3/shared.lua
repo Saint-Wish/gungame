@@ -167,6 +167,7 @@ function SWEP:Think()
 				if ( self.Weapon:Clip1() >= self.Primary.ClipSize || self.Owner:GetAmmoCount( self.Primary.Ammo ) <= 0 ) then
 					self.Weapon:SendWeaponAnim( ACT_SHOTGUN_RELOAD_FINISH )
 					self.Owner:DoReloadEvent()
+					self.Weapon:SetNetworkedBool( "reloading2", false )
 				else
 				
 				end

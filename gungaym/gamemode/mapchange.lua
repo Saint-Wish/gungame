@@ -1,21 +1,49 @@
 a = 0
 local b = 0
 mapvote = {}
+
+function RandomizeWeapons()
+	l=count()
+	for i = l, 2, -1 do -- backwards
+		local r = math.random(i) -- select a random number between 1 and i
+		maplist[i], maplist[r] = maplist[r], maplist[i] -- swap the randomly selected item to position i
+	end  
+end
+
+
+
 function changemap()
 	if SERVER then
+		local num = 1
 		local now = game.GetMap()
-		local maps = file.Find("maps/gg_*.bsp","MOD")
-
-		--if s > 3 then
-			
-			for k,v in pairs(maps) do
-				--table.insert(mapvote,mapvote[v,0)
-				mapvote[v] = 0
-				--SetGlobalInt(v,0)
-				--s= 0
-				--print "Clear"
+		
+		maps = {}
+		for k,v in pairs(file.Find("maps/gg_*.bsp","MOD")) do
+			if string.gsub(tostring(v),".bsp","") ~= now then
+				maps[num] = v
+				num = num + 1
 			end
-		--end
+		end
+		
+		for k,v in pairs(file.Find("maps/*_gy.txt","MOD")) do
+			local c = string.gsub(tostring(v),"_gy.txt",".bsp")
+			if string.gsub(tostring(v),"_gy.txt","") ~= tostring(now) then
+			print(now,v,c,c2)
+				maps[num] = c
+				num = num + 1
+			end
+		end
+		
+		for i = #maps, 2, -1 do -- backwards
+			local r = math.random(i) -- select a random number between 1 and i
+			maps[i], maps[r] = maps[r], maps[i] -- swap the randomly selected item to position i
+		end  
+		
+		PrintTable(maps)
+		print(num)
+		for x = 1,math.min(num-1,5) do
+			mapvote[maps[x]] = 0
+		end
 		
 		for k,v in pairs(player.GetAll()) do
 			--if not v:GetNWBool("voted") then
@@ -39,7 +67,7 @@ function cl_SendChoice()
 		
 		
 		local frame = vgui.Create("DFrame")
-		frame:SetSize(300,300)
+		frame:SetSize(300,(#maps * 40 + 50))
 		frame:SetTitle("Map vote")
 		frame:Center()
 		frame:MakePopup()
@@ -54,7 +82,7 @@ function cl_SendChoice()
 		for k,v in pairs(maps) do
 			button = vgui.Create("DButton")
 			button:SetSize(260,35)
-			button:SetText(v)
+			button:SetText(string.gsub(v,".bsp",""))
 			button:SetParent(frame)
 			button.DoClick = function()
 			net.Start("mapback")

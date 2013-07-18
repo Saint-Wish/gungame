@@ -64,7 +64,7 @@ SWEP.ZoomFOV				= 70
 SWEP.ZoomTime				= .25
 SWEP.RunPenalty				= 1.5
 SWEP.AimBoost				= .75
-
+SWEP.HeadshotMult 			= 2
 
 
 function SWEP:SetupDataTables()
