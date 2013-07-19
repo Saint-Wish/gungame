@@ -65,7 +65,9 @@ function SWEP:PrimaryAttack()
 	
 	// Play shoot sound
 	self.Weapon:EmitSound( self.Primary.Sound )
-	
+	if SERVER then
+		self.Owner:SetGod(false)
+	end
 	// Shoot the bullet
 	self:CSShootBullet( self.Primary.Damage, self.Primary.Recoil, self.Primary.NumShots, self.Primary.Cone )
 	

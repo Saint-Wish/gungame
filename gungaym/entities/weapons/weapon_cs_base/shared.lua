@@ -190,6 +190,11 @@ function SWEP:PrimaryAttack()
 		recoil =  recoil * (self.RunPenalty or 1.5)
 		cone = cone * (self.RunPenalty or 1.5)
 	end
+	
+	if SERVER then
+		self.Owner:SetGod(false)
+	end
+	
 	// Shoot the bullet
 	self:CSShootBullet( self.Primary.Damage, recoil, self.Primary.NumShots, cone )
 	
