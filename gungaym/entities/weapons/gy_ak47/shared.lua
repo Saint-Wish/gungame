@@ -33,10 +33,11 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_AK47.Single" )
-SWEP.Primary.Recoil			= 2.5
+SWEP.Primary.Recoil			= 2.3
 SWEP.Primary.Damage			= 40
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.025
+//SWEP.Primary.Cone			= 0.01
 SWEP.Primary.ClipSize		= 30
 SWEP.Primary.Delay			= 0.06
 SWEP.Primary.DefaultClip	= 60
@@ -53,5 +54,5 @@ SWEP.IronSightsAng = Vector(2.48, -0.101, 0)
 
 SWEP.ZoomFOV	= 70
 SWEP.ZoomTime 	= .1
-SWEP.AimBoost = .6
 SWEP.AimBoost = .3
+SWEP.Spray = 10

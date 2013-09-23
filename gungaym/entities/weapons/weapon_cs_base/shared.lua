@@ -63,8 +63,9 @@ SWEP.Secondary.Ammo			= "none"
 SWEP.ZoomFOV				= 70
 SWEP.ZoomTime				= .25
 SWEP.RunPenalty				= 1.5
-SWEP.AimBoost				= .75
+SWEP.AimBoost				= .5
 SWEP.HeadshotMult 			= 2
+SWEP.Spray 					= 10
 
 
 function SWEP:SetupDataTables()
@@ -184,9 +185,7 @@ function SWEP:PrimaryAttack()
 	if self.dt.Ironsight then
 		recoil =  recoil * (self.AimBoost or .75)
 		cone = cone * (self.AimBoost or .75)
-	end
-	
-	if self.Owner:KeyDown(IN_SPEED) then
+	elseif self.Owner:KeyDown(IN_SPEED) then
 		recoil =  recoil * (self.RunPenalty or 1.5)
 		cone = cone * (self.RunPenalty or 1.5)
 	end
@@ -204,7 +203,7 @@ function SWEP:PrimaryAttack()
 	if ( self.Owner:IsNPC() ) then return end
 	
 	// Punch the player's view
-	self.Owner:ViewPunch( Angle( math.Rand(-0.2,-0.1) * self.Primary.Recoil, math.Rand(-0.1,0.1) *self.Primary.Recoil, 0 ) )
+	self.Owner:ViewPunch( Angle( math.Rand(-0.2,-0.1) * self.Primary.Recoil, math.Rand(-0.1,0.1) * self.Primary.Recoil, 0 ) )
 	
 	// In singleplayer this function doesn't get called on the client, so we use a networked float
 	// to send the last shoot time. In multiplayer this is predicted clientside so we don't need to 
@@ -222,18 +221,25 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 
 	numbul 	= numbul 	or 1
 	cone 	= cone 		or 0.01
+	
+	local ang = self.Owner:GetAimVector()
+	local pun = self.Owner:GetPunchAngle():Forward()
+	local spray = self.Spray or 20
+	
 	iron = ( self.dt.Ironsight )
 	if iron then
-		cone = cone * 0.9
+		spray = spray * .5
 	end
+	
+	ang = Vector(ang.x, ang.y, ang.z + math.abs(pun.y) * spray)
 
 	local bullet = {}
 	bullet.Num 		= numbul
 	bullet.Src 		= self.Owner:GetShootPos()			// Source
-	bullet.Dir 		= self.Owner:GetAimVector()			// Dir of bullet
-	bullet.Spread 	= Vector( cone, cone, 0 )			// Aim Cone
+	bullet.Dir 		= ang		// Dir of bullet
+	bullet.Spread 	= Vector( cone*4, cone, 0 )			// Aim Cone
 	bullet.Tracer	= 4									// Show a tracer on every x bullets 
-	bullet.Force	= 300									// Amount of force to give to phys objects
+	bullet.Force	= 1000									// Amount of force to give to phys objects
 	bullet.Damage	= dmg
 	
 	self.Owner:FireBullets( bullet )
@@ -245,15 +251,13 @@ function SWEP:CSShootBullet( dmg, recoil, numbul, cone )
 	
 	// CUSTOM RECOIL !
 	if ( (game.SinglePlayer() && SERVER) || ( !game.SinglePlayer() && CLIENT && IsFirstTimePredicted() ) ) then
-	
 		local eyeang = self.Owner:EyeAngles()
-		eyeang.pitch = eyeang.pitch - recoil
+		eyeang.pitch = eyeang.pitch - recoil * 1
 		self.Owner:SetEyeAngles( eyeang )
 	
 	end
 
 end
-
 
 /*---------------------------------------------------------
 	Checks the objects before any action is taken
@@ -376,7 +380,7 @@ function SWEP:DrawHUD()
 		x, y = ScrW() / 2.0, ScrH() / 2.0
 	end
 
-	scale = 15 * self.Primary.Cone
+	scale = 20 * self.Primary.Cone
 
 	// Scale the size of the crosshair according to how long ago we fired our weapon
 	local LastShootTime = self.Weapon:GetNetworkedFloat( "LastShootTime", 0 )

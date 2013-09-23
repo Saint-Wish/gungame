@@ -33,15 +33,16 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_FiveSeven.Single" )
-SWEP.Primary.Recoil			= 1.2
+SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 24
 SWEP.Primary.NumShots		= 1
-SWEP.Primary.Cone			= 0.02
+SWEP.Primary.Cone			= 0.015
 SWEP.Primary.ClipSize		= 20
 SWEP.Primary.Delay			= 0
 SWEP.Primary.DefaultClip	= 40
 SWEP.Primary.Automatic		= false
 SWEP.Primary.Ammo			= "smg1"
+SWEP.Spray					= 5
 
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1

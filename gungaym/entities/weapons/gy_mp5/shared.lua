@@ -33,7 +33,7 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_MP5Navy.Single" )
-SWEP.Primary.Recoil			= 0.2
+SWEP.Primary.Recoil			= .5
 SWEP.Primary.Damage			= 16
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.01
@@ -50,3 +50,4 @@ SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
 SWEP.IronSightsPos 		= Vector( 4.7, -4, 2 )
+SWEP.Spray				= 15

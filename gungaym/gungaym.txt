@@ -1,4 +1,4 @@
-"payday"
+"gungaym"
 {
 	"base"		"base"
 	"title"		"Gun Gaym"

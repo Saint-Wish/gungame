@@ -1,3 +1,4 @@
+--This just contains the bare essentials that you need
 resource.AddFile("sound/gy/canttouch.wav")
 resource.AddFile("sound/gy/boomhead.wav")
 resource.AddFile("sound/gy/best.wav")

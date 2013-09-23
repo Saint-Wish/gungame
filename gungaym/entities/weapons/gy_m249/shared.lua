@@ -8,7 +8,7 @@ end
 
 if ( CLIENT ) then
 
-	SWEP.PrintName			= "M249"			
+	SWEP.PrintName			= "M249 BUZZSAW"			
 	SWEP.Author				= "Counter-Strike"
 	SWEP.Slot				= 3
 	SWEP.SlotPos			= 1
@@ -35,12 +35,12 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_m249.Single" )
-SWEP.Primary.Recoil			= 2
-SWEP.Primary.Damage			= 40
+SWEP.Primary.Recoil			= 2.4
+SWEP.Primary.Damage			= 45
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.05
 SWEP.Primary.ClipSize		= 75
-SWEP.Primary.Delay			= 0.09
+SWEP.Primary.Delay			= 0.05
 SWEP.Primary.DefaultClip	= 150
 SWEP.Primary.Automatic		= true
 SWEP.Primary.Ammo			= "smg1"
@@ -51,3 +51,4 @@ SWEP.Secondary.Automatic	= false
 SWEP.Secondary.Ammo			= "none"
 
 SWEP.IronSightsPos 		= Vector( -4.4, -3, 2 )
+SWEP.Spray					= 15

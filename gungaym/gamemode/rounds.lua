@@ -4,6 +4,21 @@
 2 = Post round (The winner is slaughtering everyone)
 3 = End of the game?
 */
+
+function SpecialRound()
+	if GetConVar("gy_special_rounds"):GetInt() == 0 then return end
+	local rounds = {ROUND_SPLODE,ROUND_BARREL}
+	local roll = math.Rand(1,2) --1/2 chance
+	local selection = 0
+	
+	if roll == 1 then
+		selection = table.Random(rounds)
+		print("Special round! Code "..selection)
+	end
+	
+	SetGlobalInt("gy_special_round",selection)
+end
+
 function RoundStart()
 	--ImportEntities(game.GetMap())
 	SetGlobalInt("RoundState", 0)
@@ -11,6 +26,15 @@ function RoundStart()
 	round = GetGlobalInt("round")
 	SetGlobalInt("round", round+1)
 	RandomizeWeapons()
+	//SpecialRound()
+	/*local SR_go = math.random(1,1)
+	if SR_go == 1 then
+		SpecialRandom()
+		print("Special Round!")
+		--for k,v in pairs(SpecialRound) do
+			--print(k,v)
+		--end
+	end*/
 	
 	for k,v in pairs(player.GetAll()) do
 		net.Start("wepcl")

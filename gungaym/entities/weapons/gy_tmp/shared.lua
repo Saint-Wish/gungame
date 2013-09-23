@@ -34,11 +34,11 @@ SWEP.AutoSwitchTo		= false
 SWEP.AutoSwitchFrom		= false
 
 SWEP.Primary.Sound			= Sound( "Weapon_tmp.Single" )
-SWEP.Primary.Recoil			= 0.4
+SWEP.Primary.Recoil			= 1
 SWEP.Primary.Damage			= 30
 SWEP.Primary.NumShots		= 1
 SWEP.Primary.Cone			= 0.04
-SWEP.Primary.ClipSize		= 25
+SWEP.Primary.ClipSize		= 35
 SWEP.Primary.Delay			= 0.06
 SWEP.Primary.DefaultClip	= 50
 SWEP.Primary.Automatic		= true
@@ -51,3 +51,5 @@ SWEP.Secondary.Ammo			= "none"
 
 SWEP.IronSightsPos = Vector(5.239, 0.079, 2.48)
 SWEP.IronSightsAng = Vector(0.827, -0, 0.5)
+
+SWEP.Spray = 30

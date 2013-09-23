@@ -3,6 +3,9 @@ GM.Author = "Ericson777/Shaps"
 GM.Email = "s.fuller468@gmail.com"
 GM.Website = "" //RIP Goatse.cx
 
+ROUND_SPLODE = 1
+ROUND_BARREL = 2
+
 function GM:Initialize()
 	self.BaseClass.Initialize( self )
 	
@@ -42,6 +45,20 @@ Alright, this is about to get really messy
 The following is pretty much going to be all the stuff that happens on kill
 */
 function OnKill( victim, weapon, killer )
+
+	if GetGlobalInt("gy_special_round") == ROUND_SPLODE then --Don't pay attention to this, this will come when I add speshul rounds
+		if !((weapon:GetClass() == "gy_crowbar") or (weapon:GetClass() == "gy_knife")) then
+			local explode = ents.Create( "env_explosion" ) -- creates the explosion
+			explode:SetPos( victim:GetPos() )
+			-- this creates the explosion through your self.Owner:GetEyeTrace, which is why I put eyetrace in front
+			explode:SetOwner( killer ) -- this sets you as the person who made the explosion
+			explode:Spawn() --this actually spawns the explosion
+			explode:SetKeyValue( "iMagnitude", GetConVar("gy_splode_mag"):GetInt() ) -- the magnitude
+			explode:Fire( "Explode", 0, 0 )
+		end
+	end
+
+	timer.Simple(.1,function() victim:Extinguish() end)
 	local prevlev = killer:GetNWInt("level") --Define the killer's level for convienence
 	local wep = weplist[prevlev]
 	victim.NextSpawnTime = CurTime() + 4

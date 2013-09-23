@@ -22,6 +22,7 @@ end
 function ply:SetGamemodeTeam( n )
 	if not teams[n] then return false end
 	self:SetTeam( n )
+	--self:GiveWeapons()
 	return true
 end
 
@@ -33,7 +34,7 @@ function ply:Demote()
 	end
 end
 
-function ply:SetGod(b) --Fuck cheating admins, I don't care enough to make a workaround for them
+function ply:SetGod(b)
 	if b == true then
 		self:SetRenderMode( RENDERMODE_TRANSALPHA )
 		self:SetColor( Color(255, 255, 255, 100) )
@@ -57,7 +58,7 @@ function ply:GiveWeapons()
 		self:Give("gy_knife")
 		self:Give("func_gy_trans")
 		self:SelectWeapon("func_gy_trans") --For whatever reason, if I don't swap to another weapon and then...
-		self:SetAmmo(math.ceil(weapons.Get(wep).Primary.ClipSize * 1.5), "smg1",true)
+		self:SetAmmo(weapons.Get(wep).Primary.ClipSize * 2, "smg1",true)
 		timer.Simple(.01,function() self:SelectWeapon(wep);self:StripWeapon("func_gy_trans") end) --...swap to the new weapon, the new weapon doesn't do the draw anim
 	else
 		self:Give("gy_crowbar")

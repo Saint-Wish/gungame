@@ -1,0 +1,16 @@
+// hand reskin by coredamage (leather gloves v1)
+// features: phong, bumpmap, hires
+//
+// visit: www.coredamage.com or http://www.fpsbanana.com/members/subs/136342
+
+
+"VertexLitGeneric"
+{
+    	"$baseTexture" "models/weapons/v_models/hinds/v_hand_CD_leathergloves1"
+    	"$bumpmap" "models/weapons/v_models/hinds/v_hand_CD_leathergloves1_normal"
+	"$phong" "1"
+	"$phongexponent" "10"
+	"$phongboost" "0.2"	
+	"$phongfresnelranges"	"[1 3 6]"
+	"$phongalbedotint" "1"
+}
