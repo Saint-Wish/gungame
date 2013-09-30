@@ -2,7 +2,10 @@ GM.Name = "Gun Gaym"
 GM.Author = "Ericson777/Shaps"
 GM.Email = "s.fuller468@gmail.com"
 GM.Website = "" //RIP Goatse.cx
-
+if CLIENT then
+	include("mapvote/cl_mapvote.lua")
+	include("mapvote/mapvote.lua")
+end
 ROUND_SPLODE = 1
 ROUND_BARREL = 2
 
@@ -46,7 +49,11 @@ The following is pretty much going to be all the stuff that happens on kill
 */
 function OnKill( victim, weapon, killer )
 
-	if GetGlobalInt("gy_special_round") == ROUND_SPLODE then --Don't pay attention to this, this will come when I add speshul rounds
+	if killer:GetNWInt("lifelevel") == 2 then
+		local sound = table.Random(killstreaksound)
+		killer:EmitSound(sound,400)
+	end
+	if GetGlobalInt("gy_special_round") == ROUND_SPLODE then
 		if !((weapon:GetClass() == "gy_crowbar") or (weapon:GetClass() == "gy_knife")) then
 			local explode = ents.Create( "env_explosion" ) -- creates the explosion
 			explode:SetPos( victim:GetPos() )
@@ -86,11 +93,10 @@ function OnKill( victim, weapon, killer )
 		end
 		LevelMsg(killer,(prevlev+1),GetGlobalInt("RoundState")) 
 	end
-	
+	VoiceOnKill(victim, weapon, killer)
 	if killer:GetNWInt("lifelevel") == 3 then
 		killer:KillStreak()
 	end
-	
 	DeathTicker(victim, weapon, killer)
 	
 end

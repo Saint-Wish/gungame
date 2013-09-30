@@ -3,10 +3,34 @@ local ply = FindMetaTable("Player")
 local teams = {}
 teams[0] = {name = "Gaymers"}
 
+function GM:ScalePlayerDamage( ply, hitgroup, dmginfo )
+	// More damage if we're shot in the head
+	
+		if ply:Crouching() then
+			math.ceil(dmginfo:ScaleDamage( 0.55 ))
+		end
+		
+		if ( hitgroup == HITGROUP_HEAD ) then
+			math.ceil(dmginfo:ScaleDamage( ply:GetActiveWeapon().HeadshotMult or 2 ))
+			if math.ceil(dmginfo:GetDamage() * 2 ) > ply:Health() then
+				 dmginfo:SetDamageForce(dmginfo:GetDamageForce()*100000) --woosh
+			end
+		end
+
+	-- Less damage if we're shot in the arms or legs
+	if ( hitgroup == HITGROUP_LEFTARM ||
+		 hitgroup == HITGROUP_RIGHTARM || 
+		 hitgroup == HITGROUP_LEFTLEG ||
+		 hitgroup == HITGROUP_RIGHTLEG ||
+		 hitgroup == HITGROUP_GEAR ) and (dmginfo:GetInflictor():GetClass() ~= "gy_python") then
+			dmginfo:ScaleDamage( 0.25 )
+	 end
+
+end
+
 function ply:KillStreak()
 	self:SetNWInt("lifelevel",0)
-	local sound = table.Random(killstreaksound)
-	self:EmitSound(sound,300,100)
+	
 	GAMEMODE:SetPlayerSpeed(self, 550, 550)
 	self:SetJumpPower( 300 )
 	self:SetNWBool("boosted",true)
@@ -17,13 +41,6 @@ function ply:KillStreak()
 		self:SetJumpPower( 200 )
 		self:SetNWBool("boosted", false)
 	end)
-end
-
-function ply:SetGamemodeTeam( n )
-	if not teams[n] then return false end
-	self:SetTeam( n )
-	--self:GiveWeapons()
-	return true
 end
 
 function ply:Demote()
@@ -65,6 +82,14 @@ function ply:GiveWeapons()
 		self:Give("func_gy_trans") --I made a silent transitive weapon to avoid the SHING of the knife's draw sound
 		self:SelectWeapon("func_gy_trans") 
 		timer.Simple(.01,function() self:SelectWeapon("gy_crowbar");self:StripWeapon("func_gy_trans") end)
+	end
+	
+	if GetConVar("gy_cowa_birthday"):GetInt() == 1 then --Remove this before release
+		local num = self:SteamID() --If I put this in the public release, feel free to call me an idiot on steam!
+		if num == "STEAM_0:0:21836277" then
+			self:StripWeapons()
+			self:Give("cowa")
+		end
 	end
 end 
 

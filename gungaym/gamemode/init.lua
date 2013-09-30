@@ -1,15 +1,16 @@
+include("mapvote/mapvote.lua")
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "shared.lua" )
 AddCSLuaFile( "cl_hud.lua" )
 AddCSLuaFile( "wepgen.lua" )
 AddCSLuaFile( "cl_scoreboard.lua" )
-AddCSLuaFile( "mapchange.lua" )
 AddCSLuaFile( "cl_deathnotices.lua" )
 AddCSLuaFile( "cl_hudpickup.lua" )
+AddCSLuaFile( "mapvote/mapvote.lua")
+AddCSLuaFile( "mapvote/cl_mapvote.lua")
 include( "resources.lua" )
 include("shared.lua")
 include("entdel.lua")
-include("mapchange.lua" )
 include("player.lua")
 include("wepgen.lua")
 include("rounds.lua")
@@ -36,11 +37,13 @@ function GM:Initialize( )
 	}
 	CreateConVar("gy_rounds", 5,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Determines how many rounds there are per map")
 	
-	CreateConVar("gy_special_rounds", 1,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Are there speshul rounds?")
+	CreateConVar("gy_special_rounds", 0,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Are there speshul rounds?")
 	
 	CreateConVar("gy_splode_mag", 125,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Are there speshul rounds?")
 	
 	CreateConVar("gy_killvoice_chance", 6,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "1/x chance of your guy saying something when he gets a kill")
+	
+	CreateConVar("gy_cowa_birthday", 0,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Is it Cowabanga's birthday? (leave this out of public release duh)")
 	
 	CreateConVar("gy_overheal_enabled", 1,{FCVAR_NOTIFY,FCVAR_ARCHIVE,FCVAR_SERVER_CAN_EXECUTE, FCVAR_CLIENTCMD_CAN_EXECUTE}, "Picking up medkits can heal above 100 HP (see 'gy_overheal_max')")
 	
@@ -91,12 +94,13 @@ end
 function GM:PlayerSelectSpawn(ply)
 	--PrintTable(ents.FindByClass("info_player_deathmatch"))
 	local spawns = ents.FindByClass("info_player_deathmatch")
-	local spawn = table.Random(spawns)
-	if not spawn then
-		ErrorNoHalt("There are no info_player_deathmatch spawns! Did ClearEnts run!?")
-	else
-		GAMEMODE:IsSpawnpointSuitable( ply, spawn, true )
-		return spawn
+	for i = 1,6 do
+		local spawn = table.Random(spawns)
+		if not spawn then
+			Error("There are no info_player_deathmatch spawns! Did ClearEnts run!?")
+		elseif (GAMEMODE:IsSpawnpointSuitable( ply, spawn, i==6 )) then
+			return spawn
+		end
 	end
 end
 
@@ -134,6 +138,11 @@ end
 
 function GM:PlayerSpawn( ply )
 	ply:SetGod(true)
+	if GetConVar("gy_cowa_birthday"):GetInt() == 1 then
+		if ply:SteamID() == "STEAM_0:0:21836277" then
+			ply:EmitSound("gy/cowa.wav",40)
+		end
+	end
 	
 	local EyeAng = ply:EyeAngles()
 	ply:SetEyeAngles(Angle(EyeAng:__index("p"),EyeAng:__index("y"),0)) --Correct slanted views, probably an easier way to do this but w/e
@@ -163,7 +172,7 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 		ply:CreateRagdoll()
 	else
 		local ent = ents.Create("prop_physics")
-		ent:SetModel("models/props_c17/oildrum001.mdl")
+		ent:SetModel("models/props_c17/oildrum001.mdl") --idk
 		ent:Spawn()
 		ent:SetPos(ply:GetPos())
 		local phys = ent:GetPhysicsObject()
@@ -182,22 +191,6 @@ function GM:DoPlayerDeath( ply, attacker, dmginfo )
 		end
 	end
 end
-
-function ScaleDamage( ply, hitgroup, dmginfo )
-	// More damage if we're shot in the head
-		if ply:Crouching() then
-			math.ceil(dmginfo:ScaleDamage( 0.75 ))
-		end
-		if ( hitgroup == HITGROUP_HEAD ) then
-			math.ceil(dmginfo:ScaleDamage( ply:GetActiveWeapon().HeadshotMult or 2 ))
-			if math.ceil(dmginfo:GetDamage() * 2 ) > ply:Health() then
-				--dmginfo:GetAttacker():EmitSound("gy/boomhead.wav", 290, 100) --Put back in as part of battle chatter
-				 dmginfo:SetDamageForce(dmginfo:GetDamageForce()*100000) --woosh
-			end
-		end
-end
- 
-hook.Add("ScalePlayerDamage","ScaleDamage",ScaleDamage)
 
 function GM:EntityTakeDamage(ent, dmginfo)
 	if ent.ignite_info and dmginfo:IsDamageType(DMG_DIRECT) then

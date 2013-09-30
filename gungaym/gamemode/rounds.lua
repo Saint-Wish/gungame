@@ -26,7 +26,7 @@ function RoundStart()
 	round = GetGlobalInt("round")
 	SetGlobalInt("round", round+1)
 	RandomizeWeapons()
-	//SpecialRound()
+	SpecialRound()
 	/*local SR_go = math.random(1,1)
 	if SR_go == 1 then
 		SpecialRandom()
@@ -69,17 +69,10 @@ function RoundEnd(winner)
 	SetGlobalInt("RoundState", 2)
 	
 	PrintMessage(HUD_PRINTCENTER, (winner:GetName().." won the round!"))
-	wins = (winner:GetNWInt("wins") + 1)
-	winner:SetNWInt("wins",wins)
-	if wins >= 3 then
-		PrintMessage(HUD_PRINTCENTER, (winner:GetName().." won the game!"))
-		for k,v in pairs(player.GetAll()) do
-			changemap()
-		end
-	end
+
 	if round >= maxround then
-		timer.Simple(1, function() changemap() end)
+		timer.Simple(1, function() MapVote.Start(10, false, 12, {"gg_","dm_"}) end)
 	else
-		timer.Simple(8,function() RoundStart(wins) end)
+		timer.Simple(8,function() RoundStart() end)
 	end
 end
