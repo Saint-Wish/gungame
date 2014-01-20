@@ -177,3 +177,7 @@ function SWEP:PrimaryAttack()
       self.Owner:LagCompensation(false)
    end
 end
+
+function SWEP:SecondaryAttack()
+	return false
+end
